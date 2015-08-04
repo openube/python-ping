@@ -375,7 +375,8 @@ def do_one(myStats, destIP, hostname, timeout, mySeqNumber, numDataBytes, quiet 
             myStats.maxTime = delay
     else:
         delay = None
-        print("Request timed out.")
+        if not quiet:
+            print("Request timed out.")
 
     return delay
 
