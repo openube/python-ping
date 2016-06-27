@@ -37,7 +37,7 @@ def get_version_from_git():
             shell=False, cwd=PACKAGE_ROOT,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE,
         )
-    except Exception, err:
+    except Exception as err:
         return _error("Can't get git hash: %s" % err)
 
     process.wait()
