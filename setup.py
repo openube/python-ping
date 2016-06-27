@@ -54,12 +54,12 @@ def get_version_from_git():
     try:
         raw_timestamp, hash = output.split("-", 1)
         timestamp = int(raw_timestamp)
-    except Exception, err:
+    except Exception as err:
         return _error("Error in git log output! Output was: %r" % output)
 
     try:
         timestamp_formatted = time.strftime("%Y.%m.%d", time.gmtime(timestamp))
-    except Exception, err:
+    except Exception as err:
         return _error("can't convert %r to time string: %s" % (timestamp, err))
 
     return "%s.%s" % (timestamp_formatted, hash)
