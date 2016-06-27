@@ -73,7 +73,7 @@ except ImportError:
     if "register" in sys.argv or "sdist" in sys.argv or "--long-description" in sys.argv:
         etype, evalue, etb = sys.exc_info()
         evalue = etype("%s - Please install python-creole >= v0.8 -  e.g.: pip install python-creole" % evalue)
-        raise etype, evalue, etb
+        #raise etype, evalue, etb
     long_description = None
 else:
     long_description = get_long_description(PACKAGE_ROOT)
