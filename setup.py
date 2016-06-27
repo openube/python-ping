@@ -91,7 +91,7 @@ def get_authors():
             authors.append(line.strip(" *\r\n"))
         f.close()
         authors.sort()
-    except Exception, err:
+    except Exception as err:
         authors = "[Error: %s]" % err
     return authors
 
