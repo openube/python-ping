@@ -238,6 +238,8 @@
     ===========================================================================
 """
 
+# TODO make stats collection optional.
+# TODO Remove any calls to time.sleep, to enable extension into larger framework that aren't multi threaded.
 #=============================================================================#
 import os
 import sys
