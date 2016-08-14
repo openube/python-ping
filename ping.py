@@ -309,9 +309,11 @@ def checksum(source_string):
 
     return answer
 
-#=============================================================================#
-def do_one(myStats, destIP, hostname, timeout, mySeqNumber, numDataBytes,
-           quiet=False, ipv6=False):
+
+# TODO Make call to MyStats optional
+# TODO DONE, do_one Usage!
+def do_one(destIP, hostname, timeout, mySeqNumber, numDataBytes,
+           myStats=None, quiet=False, ipv6=False):
     """
     Returns either the delay (in ms) or None on timeout.
     """
@@ -350,7 +352,9 @@ def do_one(myStats, destIP, hostname, timeout, mySeqNumber, numDataBytes,
         return delay
 
     # TODO Make calls to MyStats optional
-    myStats.pktsSent += 1
+    # TODO DONE!
+    if myStats is not None:
+        myStats.pktsSent += 1
 
     recvTime, dataSize, iphSrcIP, icmpSeqNumber, iphTTL = receive_one_ping(mySocket, my_ID, timeout, ipv6)
 
@@ -373,12 +377,14 @@ def do_one(myStats, destIP, hostname, timeout, mySeqNumber, numDataBytes,
             )
 
         # TODO Make calls to MyStats optional
-        myStats.pktsRcvd += 1
-        myStats.totTime += delay
-        if myStats.minTime > delay:
-            myStats.minTime = delay
-        if myStats.maxTime < delay:
-            myStats.maxTime = delay
+        # TODO DONE!
+        if myStats is not None:
+            myStats.pktsRcvd += 1
+            myStats.totTime += delay
+            if myStats.minTime > delay:
+                myStats.minTime = delay
+            if myStats.maxTime < delay:
+                myStats.maxTime = delay
     else:
         delay = None
         if not quiet:
@@ -529,6 +535,7 @@ def signal_handler(signum, frame):
     sys.exit(0)
 
 
+# TODO verbose_ping makes use of the myStats object.
 def verbose_ping(hostname, timeout=3000, count=3,
                  numDataBytes=64, path_finder=False, ipv6=False):
     """
@@ -540,7 +547,9 @@ def verbose_ping(hostname, timeout=3000, count=3,
         # Handle Ctrl-Break e.g. under Windows
         signal.signal(signal.SIGBREAK, signal_handler)
 
-    # TODO Make call to MyStats optional
+    # TODO Should verbose ping retain current myStats functionality?
+    # This is a higher level function than do_one or send/receive_one, so it
+    # could be used by a CLI
     myStats = MyStats()  # Reset the stats
 
     mySeqNumber = 0  # Starting value
@@ -558,12 +567,12 @@ def verbose_ping(hostname, timeout=3000, count=3,
         print()
         return
 
-    # TODO Make call to MyStats optional
+    # TODO Should verbose ping retain current myStats functionality?
     myStats.thisIP = destIP
 
     for i in range(count):
-        delay = do_one(myStats, destIP, hostname, timeout,
-                       mySeqNumber, numDataBytes, ipv6=ipv6)
+        delay = do_one(destIP, hostname, timeout, mySeqNumber,
+                       numDataBytes, ipv6=ipv6, myStats=myStats)
         if delay is None:
             delay = 0
 
@@ -573,10 +582,11 @@ def verbose_ping(hostname, timeout=3000, count=3,
         if (MAX_SLEEP > delay):
             time.sleep((MAX_SLEEP - delay)/1000)
 
-    # TODO Make call to MyStats optional
+    # TODO Should verbose ping retain current myStats functionality?
     dump_stats(myStats)
     # 0 if we receive at least one packet
     # 1 if we don't receive any packets
+    # TODO Should verbose ping retain current myStats functionality?
     return not myStats.pktsRcvd
 
 # =============================================================================#
@@ -614,8 +624,8 @@ def quiet_ping(hostname, timeout=3000, count=3,
         time.sleep(0.5)
 
     for i in range(count):
-        delay = do_one(myStats, destIP, hostname, timeout,
-                       mySeqNumber, numDataBytes, quiet=True, ipv6=ipv6)
+        delay = do_one(destIP, hostname, timeout, mySeqNumber, numDataBytes,
+                       quiet=True, ipv6=ipv6, myStats=myStats)
 
         if delay is None:
             delay = 0

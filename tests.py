@@ -4,12 +4,12 @@
 """
     python-ping unittests
     ~~~~~~~~~~~~~~~~~~~~~
-    
+
     Note that ICMP messages can only be send from processes running as root.
     So you must run this tests also as root, e.g.:
-    
+
         .../python-ping$ sudo python tests.py
-    
+
     :homepage: https://github.com/jedie/python-ping/
     :copyleft: 1989-2011 by the python-ping team, see AUTHORS for more details.
     :license: GNU GPL v2, see LICENSE for more details.
@@ -18,7 +18,7 @@
 import socket
 import unittest
 
-from ping import Ping, is_valid_ip4_address, to_ip
+from ping import Ping, is_valid_ip4_address, to_ip  # TODO Where is it getting these classes from?
 
 
 class PingTest(Ping):
