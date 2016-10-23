@@ -238,6 +238,7 @@
     ===========================================================================
 """
 
+# TODO Remove any calls to time.sleep, to enable extension into larger framework that aren't multi threaded.
 #=============================================================================#
 import os
 import sys
@@ -307,46 +308,48 @@ def checksum(source_string):
 
     return answer
 
-#=============================================================================#
-def do_one(myStats, destIP, hostname, timeout, mySeqNumber, numDataBytes, quiet = False, ipv6=False):
+
+def do_one(destIP, hostname, timeout, mySeqNumber, numDataBytes,
+           myStats=None, quiet=False, ipv6=False):
     """
     Returns either the delay (in ms) or None on timeout.
     """
     delay = None
 
     if ipv6:
-        try: # One could use UDP here, but it's obscure
+        try:  # One could use UDP here, but it's obscure
             mySocket = socket.socket(socket.AF_INET6, socket.SOCK_RAW, socket.getprotobyname("ipv6-icmp"))
             mySocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        #except socket.error
+        # except socket.error
         except OSError as e:
-            #etype, evalue, etb = sys.exc_info()
-            print("failed. (socket error: '%s')" % str(e))#evalue.args[1])
+            # etype, evalue, etb = sys.exc_info()
+            print("failed. (socket error: '%s')" % str(e))  # evalue.args[1])
             print('Note that python-ping uses RAW sockets'
-                    'and requiers root rights.')
-            raise # raise the original error
+                  'and requiers root rights.')
+            raise  # raise the original error
     else:
 
-        try: # One could use UDP here, but it's obscure
+        try:  # One could use UDP here, but it's obscure
             mySocket = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.getprotobyname("icmp"))
             mySocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        #except socket.error:
+        # except socket.error:
         except OSError as e:
-            #etype, evalue, etb = sys.exc_info()
-            print("failed. (socket error: '%s')" % str(e))#evalue.args[1])
+            # etype, evalue, etb = sys.exc_info()
+            print("failed. (socket error: '%s')" % str(e))  # evalue.args[1])
             print('Note that python-ping uses RAW sockets'
-                    'and requires root rights.')
-            raise # raise the original error
+                  'and requires root rights.')
+            raise  # raise the original error
 
-    #my_ID = os.getpid() & 0xFFFF
+    # my_ID = os.getpid() & 0xFFFF
     my_ID = (os.getpid() ^ get_ident()) & 0xFFFF
 
     sentTime = send_one_ping(mySocket, destIP, my_ID, mySeqNumber, numDataBytes, ipv6)
-    if sentTime == None:
+    if sentTime is not None:
         mySocket.close()
         return delay
 
-    myStats.pktsSent += 1
+    if myStats is not None:
+        myStats.pktsSent += 1
 
     recvTime, dataSize, iphSrcIP, icmpSeqNumber, iphTTL = receive_one_ping(mySocket, my_ID, timeout, ipv6)
 
@@ -367,12 +370,14 @@ def do_one(myStats, destIP, hostname, timeout, mySeqNumber, numDataBytes, quiet 
             print("%d bytes from %s: icmp_seq=%d ttl=%d time=%d ms" % (
                 dataSize, host_addr, icmpSeqNumber, iphTTL, delay)
             )
-        myStats.pktsRcvd += 1
-        myStats.totTime += delay
-        if myStats.minTime > delay:
-            myStats.minTime = delay
-        if myStats.maxTime < delay:
-            myStats.maxTime = delay
+
+        if myStats is not None:
+            myStats.pktsRcvd += 1
+            myStats.totTime += delay
+            if myStats.minTime > delay:
+                myStats.minTime = delay
+            if myStats.maxTime < delay:
+                myStats.maxTime = delay
     else:
         delay = None
         if not quiet:
@@ -380,7 +385,7 @@ def do_one(myStats, destIP, hostname, timeout, mySeqNumber, numDataBytes, quiet 
 
     return delay
 
-#=============================================================================#
+# =============================================================================#
 def send_one_ping(mySocket, destIP, myID, mySeqNumber, numDataBytes, ipv6=False):
     """
     Send one ping to the given >destIP<.
@@ -513,7 +518,7 @@ def dump_stats(myStats):
     print("")
     return
 
-#=============================================================================#
+
 def signal_handler(signum, frame):
     """
     Handle exit via signals
@@ -522,9 +527,9 @@ def signal_handler(signum, frame):
     print("\n(Terminated with signal %d)\n" % (signum))
     sys.exit(0)
 
-#=============================================================================#
-def verbose_ping(hostname, timeout = 3000, count = 3,
-                     numDataBytes = 64, path_finder = False, ipv6=False):
+
+def verbose_ping(hostname, timeout=3000, count=3,
+                 numDataBytes=64, path_finder=False, ipv6=False):
     """
     Send >count< ping to >destIP< with the given >timeout< and display
     the result.
@@ -534,9 +539,9 @@ def verbose_ping(hostname, timeout = 3000, count = 3,
         # Handle Ctrl-Break e.g. under Windows
         signal.signal(signal.SIGBREAK, signal_handler)
 
-    myStats = MyStats() # Reset the stats
+    myStats = MyStats()  # Reset the stats
 
-    mySeqNumber = 0 # Starting value
+    mySeqNumber = 0  # Starting value
 
     try:
         if ipv6:
@@ -546,16 +551,16 @@ def verbose_ping(hostname, timeout = 3000, count = 3,
             destIP = socket.gethostbyname(hostname)
         print("\nPYTHON PING %s (%s): %d data bytes" % (hostname, destIP, numDataBytes))
     except socket.gaierror as e:
-        #etype, evalue, etb = sys.exc_info()
-        print("\nPYTHON PING: Unknown host: %s (%s)" % (hostname, str(e))) #(hostname, evalue.args[1]))
+        # etype, evalue, etb = sys.exc_info()
+        print("\nPYTHON PING: Unknown host: %s (%s)" % (hostname, str(e)))  # (hostname, evalue.args[1]))
         print()
         return
 
     myStats.thisIP = destIP
 
     for i in range(count):
-        delay = do_one(myStats, destIP, hostname, timeout,
-                         mySeqNumber, numDataBytes, ipv6=ipv6)
+        delay = do_one(destIP, hostname, timeout, mySeqNumber,
+                       numDataBytes, ipv6=ipv6, myStats=myStats)
         if delay is None:
             delay = 0
 
@@ -570,13 +575,15 @@ def verbose_ping(hostname, timeout = 3000, count = 3,
     # 1 if we don't receive any packets
     return not myStats.pktsRcvd
 
-#=============================================================================#
-def quiet_ping(hostname, timeout = 3000, count = 3,
-                     numDataBytes = 64, path_finder = False, ipv6 = False):
+# =============================================================================#
+
+
+def quiet_ping(hostname, timeout=3000, count=3,
+               numDataBytes=64, path_finder=False, ipv6=False):
     """
     Same as verbose_ping, but the results are returned as tuple
     """
-    myStats = MyStats() # Reset the stats
+    myStats = MyStats()  # Reset the stats
     mySeqNumber = 0 # Starting value
 
     try:
@@ -590,18 +597,18 @@ def quiet_ping(hostname, timeout = 3000, count = 3,
 
     myStats.thisIP = destIP
 
-    # This will send packet that we dont care about 0.5 seconds before it starts
-    # acrutally pinging. This is needed in big MAN/LAN networks where you sometimes
+    # This will send packet that we don't care about 0.5 seconds before it starts
+    # actually pinging. This is needed in big MAN/LAN networks where you sometimes
     # loose the first packet. (while the switches find the way... :/ )
     if path_finder:
         fakeStats = MyStats()
         do_one(fakeStats, destIP, hostname, timeout,
-                        mySeqNumber, numDataBytes, quiet=True, ipv6=ipv6)
+               mySeqNumber, numDataBytes, quiet=True, ipv6=ipv6)
         time.sleep(0.5)
 
     for i in range(count):
-        delay = do_one(myStats, destIP, hostname, timeout,
-                        mySeqNumber, numDataBytes, quiet=True, ipv6=ipv6)
+        delay = do_one(destIP, hostname, timeout, mySeqNumber, numDataBytes,
+                       quiet=True, ipv6=ipv6, myStats=myStats)
 
         if delay is None:
             delay = 0
@@ -614,13 +621,14 @@ def quiet_ping(hostname, timeout = 3000, count = 3,
 
     if myStats.pktsSent > 0:
         myStats.fracLoss = (myStats.pktsSent - myStats.pktsRcvd) / myStats.pktsSent
+
     if myStats.pktsRcvd > 0:
         myStats.avrgTime = myStats.totTime / myStats.pktsRcvd
 
     # return tuple(max_rtt, min_rtt, avrg_rtt, percent_lost)
     return myStats.maxTime, myStats.minTime, myStats.avrgTime, myStats.fracLoss
 
-#=============================================================================#
+# =============================================================================#
 if __name__ == '__main__':
     # FIXME: Add a real CLI
     if len(sys.argv) == 1:
