@@ -43,8 +43,15 @@
 
     Bug fix by  Auke Willem Oosterhoff
 
+    Improving Python 3 competability by FliegendeWurst
+
     Revision history
     ~~~~~~~~~~~~~~~~
+
+    October 24, 2016
+    ----------------
+    * Improving Python 3 competability (by FliegendeWurst)
+    * Fixing small bug
 
     Febriary 4, 2015
     ----------------
