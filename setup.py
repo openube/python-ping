@@ -5,8 +5,8 @@
     distutils setup
     ~~~~~~~~~~~~~~~
 
-    :homepage: https://github.com/jedie/python-ping/
-    :copyleft: 1989-2014 by the python-ping team, see AUTHORS for more details.
+    :homepage: https://github.com/l4m3rx/python-ping/
+    :copyleft: 1989-2016 by the python-ping team, see AUTHORS for more details.
     :license: GNU GPL v2, see LICENSE for more details.
 """
 
@@ -98,16 +98,17 @@ def get_authors():
 
 setup(
     name='python-ping',
-    version=get_version_from_git(),
+#    version=get_version_from_git(),
+    version='24102016',
     description='A pure python ICMP ping implementation using raw sockets.',
     long_description=long_description,
     author=get_authors(),
-    maintainer="Jens Diemer",
-    maintainer_email="python-ping@jensdiemer.de",
-    url='https://github.com/jedie/python-ping/',
+    maintainer="Georgi Kolev",
+    maintainer_email="georgi.kolev@gmail.com",
+    url='https://github.com/l4m3rx/python-ping/',
     keywords="ping icmp network latency",
     packages=find_packages(),
-    include_package_data=True, # include package data under svn source control
+    include_package_data=True,  # include package data under svn source control
     zip_safe=False,
     scripts=["ping.py"],
     classifiers=[
