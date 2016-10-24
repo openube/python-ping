@@ -344,7 +344,7 @@ def do_one(destIP, hostname, timeout, mySeqNumber, numDataBytes,
     my_ID = (os.getpid() ^ get_ident()) & 0xFFFF
 
     sentTime = send_one_ping(mySocket, destIP, my_ID, mySeqNumber, numDataBytes, ipv6)
-    if sentTime is not None:
+    if sentTime is None:
         mySocket.close()
         return delay
 
@@ -367,7 +367,7 @@ def do_one(destIP, hostname, timeout, mySeqNumber, numDataBytes,
                     # Python on windows dosn't have inet_ntop.
                     host_addr = hostname
 
-            print("%d bytes from %s: icmp_seq=%d ttl=%d time=%d ms" % (
+            print("%d bytes from %s: icmp_seq=%d ttl=%d time=%.2f ms" % (
                 dataSize, host_addr, icmpSeqNumber, iphTTL, delay)
             )
 
@@ -634,6 +634,7 @@ if __name__ == '__main__':
     if len(sys.argv) == 1:
 
         # These should work:
+        verbose_ping("127.0.0.1")
         verbose_ping("8.8.8.8")
         verbose_ping("heise.de")
         verbose_ping("google.com")
