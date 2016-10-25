@@ -12,7 +12,7 @@ Note that ICMP messages can only be sent from processes running as root
 == Competability ==
  * Python 2.6+
  * Python 3.x
-= Tested with Python2.7 & Python3.5 =
+=== Tested with Python2.7 & Python3.5 ===
 
 
 === Usage ===
