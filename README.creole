@@ -3,7 +3,7 @@ A pure python ping implementation using raw sockets.
 Note that ICMP messages can only be sent from processes running as root
 (in Windows, you must run this script as 'Administrator').
 
-Tested and works with Python 2.7 & Python 3.5
+Tested and works with Python 2.7 & Python 3.5 /Should work on 2.6+/
 
 Original Version from [[ftp://ftp.visi.com/users/mdc/ping.py|Matthew Dixon Cowles]]
   
@@ -40,6 +40,12 @@ round-trip (ms)  min/avg/max = 55.468/55.795/56.232
 
 
 == Revision history ==
+
+October 25, 2016
+----------------
+ * New unittest (tests.py) thanks to EclectickMedia
+ * Switching .iteritems() to .items() in icmp_messages.py for better competability (thanks to Steve Clement)
+ * Small fixes
 
 October 24, 2016
 ----------------

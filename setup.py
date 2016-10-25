@@ -73,7 +73,7 @@ except ImportError:
     if "register" in sys.argv or "sdist" in sys.argv or "--long-description" in sys.argv:
         etype, evalue, etb = sys.exc_info()
         evalue = etype("%s - Please install python-creole >= v0.8 -  e.g.: pip install python-creole" % evalue)
-        #raise etype, evalue, etb
+        raise etype(evalue).with_traceback(etb)
     long_description = None
 else:
     long_description = get_long_description(PACKAGE_ROOT)
@@ -99,7 +99,7 @@ def get_authors():
 setup(
     name='python-ping',
 #    version=get_version_from_git(),
-    version='24102016',
+    version='25102016',
     description='A pure python ICMP ping implementation using raw sockets.',
     long_description=long_description,
     author=get_authors(),
