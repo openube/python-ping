@@ -23,173 +23,6 @@
     Distributable under the terms of the GNU General Public License
     version 2. Provided with no warranties of any sort.
 
-    Original Version from Matthew Dixon Cowles:
-      -> ftp://ftp.visi.com/users/mdc/ping.py
-
-    Rewrite by Jens Diemer:
-      -> http://www.python-forum.de/post-69122.html#69122
-
-    Rewrite by George Notaras:
-      -> http://www.g-loaded.eu/2009/10/30/python-ping/
-
-    Enhancements by Martin Falatic:
-      -> http://www.falatic.com/index.php/39/pinging-with-python
-
-    Enhancements and fixes by Georgi Kolev:
-      -> http://github.com/jedie/python-ping/
-
-    Bug fix by Andrejs Rozitis:
-      -> http://github.com/rozitis/python-ping/
-
-    Bug fix by  Auke Willem Oosterhoff
-
-    Improving Python 3 competability by FliegendeWurst
-
-    Revision history
-    ~~~~~~~~~~~~~~~~
-
-    October 24, 2016
-    ----------------
-    * Improving Python 3 competability (by FliegendeWurst)
-    * Fixing small bug
-
-    Febriary 4, 2015
-    ----------------
-    * Fix statistics dump on unexpected exit
-    * Fixing a bug where we match the ICMP request as respons
-      Fix based on samuel's work https://github.com/samuel/python-ping/commit/745c159dacce6afebb0f82cac8e9ed5bb2189491#diff-0ee81781c0132dc8f743df3a41b71918R128
-    * Merging simudream's patch to fix python3 error handeling.
-
-    January 21, 2015
-    ----------------
-    * Set socket options to allow sending pings to broadcast address
-      - Based on Tom Wilkie's patch
-        https://github.com/tomwilkie/pyping/commit/7d017b03ee462fae72e2d0ff96a042bcba295564
-
-    August 6, 2014
-    --------------
-    * Fixing an bug introduced with last changes :S
-      - Python on Windows dosn't have socket.inet_ntop
-        Adding try/except to handle AttributeError.
-
-    June 28, 2014
-    -------------
-    * A bit closer to what PIP8 wants
-
-    * Litlle modifications by Auke Willem Oosterhoff:
-     - Added support for simultaneous pings on multiple hosts.
-     https://bitbucket.org/OrangeTux/python-ping/commits/d4aa720662995a57cf18fa6b8ea689e9d11d26c7/raw/
-
-    * Faster and cleaner checksum creation
-      Based on frfra's patch
-      https://github.com/alexlouden/python-ping/commit/b9fc3acb2c36ccc895d1f7ba7336b951dc033ce9
-
-    * Changing 'except' calls to work with 2.x and 3.x
-      Based on pferate's patch
-      https://github.com/pferate/python_ping/commit/4e761ea99582ac1699c7965d149ce16e6b62f0ac
-
-    June 19, 2013
-    --------------
-    * Added support for IPv6. Taken from implementation of Lars Strand.
-
-    March 19, 2013
-    --------------
-    * Fixing bug to prevent divide by 0 during run-time.
-
-    January 26, 2012
-    ----------------
-    * Fixing BUG #4 - competability with python 2.x [tested with 2.7]
-      - Packet data building is different for 2.x and 3.x.
-        'cose of the string/bytes difference.
-    * Fixing BUG #10 - the multiple resolv issue.
-      - When pinging domain names insted of hosts (for exmaple google.com)
-        you can get different IP every time you try to resolv it, we should
-        resolv the host only once and stick to that IP.
-    * Fixing BUGs #3 #10 - Doing hostname resolv only once.
-    * Fixing BUG #14 - Removing all 'global' stuff.
-        - You should not use globul! Its bad for you...and its not thread safe!
-    * Fix - forcing the use of different times on linux/windows for
-            more accurate mesurments. (time.time - linux/ time.clock - windows)
-    * Adding quiet_ping function - This way we'll be able to use this script
-        as external lib.
-    * Changing default timeout to 3s. (1second is not enought)
-    * Switching data syze to packet size. It's easyer for the user to ignore the
-        fact that the packet headr is 8b and the datasize 64 will make packet with
-        size 72.
-
-    October 12, 2011
-    --------------
-    Merged updates from the main project
-      -> https://github.com/jedie/python-ping
-
-    September 12, 2011
-    --------------
-    Bugfixes + cleanup by Jens Diemer
-    Tested with Ubuntu + Windows 7
-
-    September 6, 2011
-    --------------
-    Cleanup by Martin Falatic. Restored lost comments and docs. Improved
-    functionality: constant time between pings, internal times consistently
-    use milliseconds. Clarified annotations (e.g., in the checksum routine).
-    Using unsigned data in IP & ICMP header pack/unpack unless otherwise
-    necessary. Signal handling. Ping-style output formatting and stats.
-
-    August 3, 2011
-    --------------
-    Ported to py3k by Zach Ware. Mostly done by 2to3; also minor changes to
-    deal with bytes vs. string changes (no more ord() in checksum() because
-    >source_string< is actually bytes, added .encode() to data in
-    send_one_ping()).  That's about it.
-
-    March 11, 2010
-    --------------
-    changes by Samuel Stauffer:
-    - replaced time.clock with default_timer which is set to
-      time.clock on windows and time.time on other systems.
-
-    November 8, 2009
-    ----------------
-    Improved compatibility with GNU/Linux systems.
-
-    Fixes by:
-     * George Notaras -- http://www.g-loaded.eu
-    Reported by:
-     * Chris Hallman -- http://cdhallman.blogspot.com
-
-    Changes in this release:
-     - Re-use time.time() instead of time.clock(). The 2007 implementation
-       worked only under Microsoft Windows. Failed on GNU/Linux.
-       time.clock() behaves differently under the two OSes[1].
-
-    [1] http://docs.python.org/library/time.html#time.clock
-
-    May 30, 2007
-    ------------
-    little rewrite by Jens Diemer:
-     -  change socket asterisk import to a normal import
-     -  replace time.time() with time.clock()
-     -  delete "return None" (or change to "return" only)
-     -  in checksum() rename "str" to "source_string"
-
-    December 4, 2000
-    ----------------
-    Changed the struct.pack() calls to pack the checksum and ID as
-    unsigned. My thanks to Jerome Poincheval for the fix.
-
-    November 22, 1997
-    -----------------
-    Initial hack. Doesn't do much, but rather than try to guess
-    what features I (or others) will want in the future, I've only
-    put in what I need now.
-
-    December 16, 1997
-    -----------------
-    For some reason, the checksum bytes are in the wrong order when
-    this is run under Solaris 2.X for SPARC but it works right under
-    Linux x86. Since I don't know just what's wrong, I'll swap the
-    bytes always and then do an htons().
-
     ===========================================================================
     IP header info from RFC791
       -> http://tools.ietf.org/html/rfc791)
@@ -270,11 +103,11 @@ else:
 #=============================================================================#
 # ICMP parameters
 
-ICMP_ECHOREPLY = 0		# Echo reply (per RFC792)
-ICMP_ECHO = 8			# Echo request (per RFC792)
-ICMP_ECHO_IPV6 = 128		# Echo request (per RFC4443)
-ICMP_ECHO_IPV6_REPLY = 129	# Echo request (per RFC4443)
-ICMP_MAX_RECV = 2048		# Max size of incoming buffer
+ICMP_ECHOREPLY = 0  # Echo reply (per RFC792)
+ICMP_ECHO = 8  # Echo request (per RFC792)
+ICMP_ECHO_IPV6 = 128  # Echo request (per RFC4443)
+ICMP_ECHO_IPV6_REPLY = 129  # Echo request (per RFC4443)
+ICMP_MAX_RECV = 2048  # Max size of incoming buffer
 
 MAX_SLEEP = 1000
 
@@ -288,7 +121,8 @@ class MyStats:
     avrgTime = 0
     fracLoss = 1.0
 
-myStats = MyStats # NOT Used globally anymore.
+# NOT Used globally anymore.
+myStats = MyStats
 
 #=============================================================================#
 def checksum(source_string):
@@ -308,9 +142,9 @@ def checksum(source_string):
     val &= 0xffffffff # Truncate val to 32 bits (a variance from ping.c, which
                       # uses signed ints, but overflow is unlikely in ping)
 
-    val = (val >> 16) + (val & 0xffff)    # Add high 16 bits to low 16 bits
-    val += (val >> 16)                    # Add carry from above (if any)
-    answer = ~val & 0xffff                # Invert and truncate to 16 bits
+    val = (val >> 16) + (val & 0xffff)  # Add high 16 bits to low 16 bits
+    val += (val >> 16)  # Add carry from above (if any)
+    answer = ~val & 0xffff  # Invert and truncate to 16 bits
     answer = socket.htons(answer)
 
     return answer
@@ -339,15 +173,12 @@ def do_one(destIP, hostname, timeout, mySeqNumber, numDataBytes,
         try:  # One could use UDP here, but it's obscure
             mySocket = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.getprotobyname("icmp"))
             mySocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        # except socket.error:
         except OSError as e:
-            # etype, evalue, etb = sys.exc_info()
-            print("failed. (socket error: '%s')" % str(e))  # evalue.args[1])
+            print("failed. (socket error: '%s')" % str(e))
             print('Note that python-ping uses RAW sockets'
                   'and requires root rights.')
             raise  # raise the original error
 
-    # my_ID = os.getpid() & 0xFFFF
     my_ID = (os.getpid() ^ get_ident()) & 0xFFFF
 
     sentTime = send_one_ping(mySocket, destIP, my_ID, mySeqNumber, numDataBytes, ipv6)
@@ -397,7 +228,7 @@ def send_one_ping(mySocket, destIP, myID, mySeqNumber, numDataBytes, ipv6=False)
     """
     Send one ping to the given >destIP<.
     """
-    #destIP  =  socket.gethostbyname(destIP)
+    # destIP  =  socket.gethostbyname(destIP)
 
     # Header is type (8), code (8), checksum (16), id (16), sequence (16)
     # (numDataBytes - 8) - Remove header size from packet size
@@ -425,7 +256,7 @@ def send_one_ping(mySocket, destIP, myID, mySeqNumber, numDataBytes, ipv6=False)
     else:
         for i in range(startVal, startVal + (numDataBytes - 8)):
             padBytes += [(i & 0xff)]  # Keep chars in the 0-255 range
-        #data = bytes(padBytes)
+        # data = bytes(padBytes)
         data = bytearray(padBytes)
 
 
@@ -448,11 +279,9 @@ def send_one_ping(mySocket, destIP, myID, mySeqNumber, numDataBytes, ipv6=False)
     sendTime = default_timer()
 
     try:
-        mySocket.sendto(packet, (destIP, 1)) # Port number is irrelevant for ICMP
-    #except socket.error:
+        mySocket.sendto(packet, (destIP, 1))  # Port number is irrelevant for ICMP
     except OSError as e:
-        #etype, evalue, etb = sys.exc_info()
-        print("General failure (%s)" % str(e))#(evalue.args[1]))
+        print("General failure (%s)" % str(e))
         return
 
     return sendTime
@@ -464,11 +293,11 @@ def receive_one_ping(mySocket, myID, timeout, ipv6 = False):
     """
     timeLeft = timeout/1000
 
-    while True: # Loop while waiting for packet or timeout
+    while True:  # Loop while waiting for packet or timeout
         startedSelect = default_timer()
         whatReady = select.select([mySocket], [], [], timeLeft)
         howLongInSelect = (default_timer() - startedSelect)
-        if whatReady[0] == []: # Timeout
+        if whatReady[0] == []:  # Timeout
             return None, 0, 0, 0, 0
 
         timeReceived = default_timer()
@@ -494,9 +323,7 @@ def receive_one_ping(mySocket, myID, timeout, ipv6 = False):
 
         # Match only the packets we care about
         if (icmpType != 8) and (icmpPacketID == myID):
-        #if icmpPacketID == myID: # Our packet
             dataSize = len(recPacket) - 28
-            #print (len(recPacket.encode()))
             return timeReceived, (dataSize + 8), iphSrcIP, icmpSeqNumber, iphTTL
 
         timeLeft = timeLeft - howLongInSelect
@@ -522,14 +349,12 @@ def dump_stats(myStats):
             myStats.minTime, myStats.totTime/myStats.pktsRcvd, myStats.maxTime
         ))
 
-    print("")
+    print()
     return
 
 
 def signal_handler(signum, frame):
-    """
-    Handle exit via signals
-    """
+    """ Handle exit via signals """
     dump_stats(myStats)
     print("\n(Terminated with signal %d)\n" % (signum))
     sys.exit(0)
@@ -541,7 +366,7 @@ def verbose_ping(hostname, timeout=3000, count=3,
     Send >count< ping to >destIP< with the given >timeout< and display
     the result.
     """
-    signal.signal(signal.SIGINT, signal_handler)   # Handle Ctrl-C
+    signal.signal(signal.SIGINT, signal_handler)  # Handle Ctrl-C
     if hasattr(signal, "SIGBREAK"):
         # Handle Ctrl-Break e.g. under Windows
         signal.signal(signal.SIGBREAK, signal_handler)
@@ -558,8 +383,7 @@ def verbose_ping(hostname, timeout=3000, count=3,
             destIP = socket.gethostbyname(hostname)
         print("\nPYTHON PING %s (%s): %d data bytes" % (hostname, destIP, numDataBytes))
     except socket.gaierror as e:
-        # etype, evalue, etb = sys.exc_info()
-        print("\nPYTHON PING: Unknown host: %s (%s)" % (hostname, str(e)))  # (hostname, evalue.args[1]))
+        print("\nPYTHON PING: Unknown host: %s (%s)" % (hostname, str(e)))
         print()
         return
 
@@ -587,11 +411,9 @@ def verbose_ping(hostname, timeout=3000, count=3,
 
 def quiet_ping(hostname, timeout=3000, count=3,
                numDataBytes=64, path_finder=False, ipv6=False):
-    """
-    Same as verbose_ping, but the results are returned as tuple
-    """
+    """ Same as verbose_ping, but the results are returned as tuple """
     myStats = MyStats()  # Reset the stats
-    mySeqNumber = 0 # Starting value
+    mySeqNumber = 0  # Starting value
 
     try:
         if ipv6:
