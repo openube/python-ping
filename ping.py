@@ -3,8 +3,6 @@
 
 """
     A pure python ping implementation using raw sockets.
-
-    (This is Python 3 port of https://github.com/jedie/python-ping)
     (Tested and working with python 2.7, should work with 2.6+)
 
     Note that ICMP messages can only be sent from processes running as root
@@ -16,66 +14,10 @@
     US Army Ballistic Research Laboratory in December, 1983 and
     placed in the public domain. They have my thanks.
 
-    Bugs are naturally mine. I'd be glad to hear about them. There are
-    certainly word - size dependencies here.
-
     Copyright (c) Matthew Dixon Cowles, <http://www.visi.com/~mdc/>.
     Distributable under the terms of the GNU General Public License
     version 2. Provided with no warranties of any sort.
 
-    ===========================================================================
-    IP header info from RFC791
-      -> http://tools.ietf.org/html/rfc791)
-
-    0                   1                   2                   3
-    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |Version|  IHL  |Type of Service|          Total Length         |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |         Identification        |Flags|      Fragment Offset    |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |  Time to Live |    Protocol   |         Header Checksum       |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |                       Source Address                          |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |                    Destination Address                        |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |                    Options                    |    Padding    |
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-    ===========================================================================
-    ICMP Echo / Echo Reply Message header info from RFC792
-      -> http://tools.ietf.org/html/rfc792
-
-        0                   1                   2                   3
-        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-        |     Type      |     Code      |          Checksum             |
-        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-        |           Identifier          |        Sequence Number        |
-        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-        |     Data ...
-        +-+-+-+-+-
-
-    ===========================================================================
-    ICMP parameter info:
-      -> http://www.iana.org/assignments/icmp-parameters/icmp-parameters.xml
-
-    ===========================================================================
-    An example of ping's typical output:
-
-    PING heise.de (193.99.144.80): 56 data bytes
-    64 bytes from 193.99.144.80: icmp_seq=0 ttl=240 time=127 ms
-    64 bytes from 193.99.144.80: icmp_seq=1 ttl=240 time=127 ms
-    64 bytes from 193.99.144.80: icmp_seq=2 ttl=240 time=126 ms
-    64 bytes from 193.99.144.80: icmp_seq=3 ttl=240 time=126 ms
-    64 bytes from 193.99.144.80: icmp_seq=4 ttl=240 time=127 ms
-
-    ----heise.de PING Statistics----
-    5 packets transmitted, 5 packets received, 0.0% packet loss
-    round-trip (ms)  min/avg/max/med = 126/127/127/127
-
-    ===========================================================================
 """
 
 # TODO Remove any calls to time.sleep, to enable extension into larger framework that aren't multi threaded.
@@ -139,8 +81,8 @@ def checksum(source_string):
         converted.bytewap()
     val = sum(converted)
 
-    val &= 0xffffffff # Truncate val to 32 bits (a variance from ping.c, which
-                      # uses signed ints, but overflow is unlikely in ping)
+    val &= 0xffffffff  # Truncate val to 32 bits (a variance from ping.c, which
+                       # uses signed ints, but overflow is unlikely in ping)
 
     val = (val >> 16) + (val & 0xffff)  # Add high 16 bits to low 16 bits
     val += (val >> 16)  # Add carry from above (if any)
@@ -161,10 +103,8 @@ def do_one(destIP, hostname, timeout, mySeqNumber, numDataBytes,
         try:  # One could use UDP here, but it's obscure
             mySocket = socket.socket(socket.AF_INET6, socket.SOCK_RAW, socket.getprotobyname("ipv6-icmp"))
             mySocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        # except socket.error
         except OSError as e:
-            # etype, evalue, etb = sys.exc_info()
-            print("failed. (socket error: '%s')" % str(e))  # evalue.args[1])
+            print("failed. (socket error: '%s')" % str(e))
             print('Note that python-ping uses RAW sockets'
                   'and requiers root rights.')
             raise  # raise the original error
