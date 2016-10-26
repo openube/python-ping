@@ -3,10 +3,13 @@
 
 """
     A pure python ping implementation using raw sockets.
-    (Tested and working with python 2.7, should work with 2.6+)
 
-    Note that ICMP messages can only be sent from processes running as root
-    (in Windows, you must run this script as 'Administrator').
+    Compatibility:
+        OS: Linux, Windows, MacOSX
+        Python: 2.6 - 3.5
+
+    Note that due to the usage of RAW sockets root/Administrator
+    privileges are requied.
 
     Derived from ping.c distributed in Linux's netkit. That code is
     copyright (c) 1989 by The Regents of the University of California.
@@ -17,6 +20,8 @@
     Copyright (c) Matthew Dixon Cowles, <http://www.visi.com/~mdc/>.
     Distributable under the terms of the GNU General Public License
     version 2. Provided with no warranties of any sort.
+
+    website: https://github.com/l4m3rx/python-ping
 
 """
 
