@@ -25,7 +25,7 @@ round-trip (ms)  min/avg/max = 55.468/55.795/56.232
 }}}
 
 
-=== Using at lib ===
+=== Using as lib ===
 {{{
 Python 2.7.11 (default, Mar  3 2016, 13:35:30) 
 [GCC 5.3.0] on linux2
