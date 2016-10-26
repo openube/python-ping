@@ -4,10 +4,6 @@ A pure python ping implementation using raw sockets.
  * Note that ICMP messages can only be sent from processes running as root
    (in Windows, you must run this script as 'Administrator').
 
-== Compatibility ==
- * Python 2.6+
- * Python 3.x
-
 == Original Version ==
 * [[ftp://ftp.visi.com/users/mdc/ping.py|Matthew Dixon Cowles]]
 * copyleft 1989-2016 by the python-ping team, see [[https://github.com/l4m3rx/python-ping/blob/master/AUTHORS|AUTHORS]] for more details.
