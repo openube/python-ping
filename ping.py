@@ -421,15 +421,9 @@ def quiet_ping(hostname, timeout=3000, count=3,
 
 # =============================================================================#
 if __name__ == '__main__':
-    # FIXME: Add a real CLI
-    parser = argparse.ArgumentParser(prog='python-ping',
-                                     description='A pure python implementation\
-                                      of the ping protocol. *REQUIRES ROOT*')
-    parser.add_argument('address', help='The address to attempt to ping.')
-
-    # parser.add_argument()
-    if len(sys.argv) == 1:
-
+    # FIXME: Add a real CLI (mostly fixed)
+    if sys.argv.count('-T') or sys.argv.count('--test_case'):
+        print('Running PYTHON PING test case.')
         # These should work:
         verbose_ping("127.0.0.1")
         verbose_ping("8.8.8.8")
@@ -449,8 +443,30 @@ if __name__ == '__main__':
 
         # Should fails with 'The requested address is not valid in its context'
         verbose_ping("0.0.0.0")
-    elif len(sys.argv) == 2:
-        retval = verbose_ping(sys.argv[1])
-        sys.exit(retval)
-    else:
-        print("Error: call ./ping.py hostname")
+
+    parser = argparse.ArgumentParser(prog='python-ping',
+                                     description='A pure python implementation\
+                                      of the ping protocol. *REQUIRES ROOT*')
+    parser.add_argument('address', help='The address to attempt to ping.')
+
+    parser.add_argument('-t', '--timeout', help='The maximum amount of time to\
+                         wait until ping timeout.', type=int, default=3000)
+
+    parser.add_argument('-c', '--request_count', help='The number of attempts \
+                        to make. See --infinite to attempt requests until \
+                        stopped.', type=int, default=3)
+    # TODO Implement the ability to continuously attempt pings.
+
+    parser.add_argument('-I', '--ipv6', action='store_true', help='Flag to \
+                        use IPv6.')
+
+    parser.add_argument('-s', '--packet_size', type=int, help='Designate the\
+                        amount of data to send per packet.', default=64)
+
+    parser.add_argument('-T', '--test_case', action='store_true', help='Flag \
+                        to run the default test case suite.')
+
+    parsed = parser.parse_args()
+
+    sys.exit(verbose_ping(parsed.address, parsed.timeout, parsed.request_count,
+                          parsed.packet_size, ipv6=parsed.ipv6))
