@@ -2,6 +2,10 @@
 
 ==== November 2, 2016 ====
 ----------------
+  * Fix. Replacing print() with print('') to avoid python2.x printing "()" liens
+
+==== November 2, 2016 ====
+----------------
   * Updating Authors
   * Fixing up function names as suggested by EclectickMedia
     https://github.com/l4m3rx/python-ping/issues/13
