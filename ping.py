@@ -78,9 +78,8 @@ class MyStats:
 # NOT Used globally anymore.
 myStats = MyStats
 
-
-# =============================================================================#
-def checksum(source_string):
+#=============================================================================#
+def _checksum(source_string):
     """
     A port of the functionality of in_cksum() from ping.c
     Ideally this would act on the string as a series of 16-bit ints (host
@@ -105,7 +104,7 @@ def checksum(source_string):
     return answer
 
 
-def do_one(destIP, hostname, timeout, mySeqNumber, numDataBytes,
+def single_ping(destIP, hostname, timeout, mySeqNumber, numDataBytes,
            myStats=None, quiet=False, ipv6=False):
     """
     Returns either the delay (in ms) or None on timeout.
@@ -136,8 +135,7 @@ def do_one(destIP, hostname, timeout, mySeqNumber, numDataBytes,
 
     my_ID = (os.getpid() ^ get_ident()) & 0xFFFF
 
-    sentTime = send_one_ping(mySocket, destIP, my_ID, mySeqNumber,
-                             numDataBytes, ipv6)
+    sentTime = _send(mySocket, destIP, my_ID, mySeqNumber, numDataBytes, ipv6)
     if sentTime is None:
         mySocket.close()
         return delay
@@ -145,8 +143,7 @@ def do_one(destIP, hostname, timeout, mySeqNumber, numDataBytes,
     if myStats is not None:
         myStats.pktsSent += 1
 
-    recvTime, dataSize, iphSrcIP, icmpSeqNumber, iphTTL = receive_one_ping(
-        mySocket, my_ID, timeout, ipv6)
+    recvTime, dataSize, iphSrcIP, icmpSeqNumber, iphTTL = _receive(mySocket, my_ID, timeout, ipv6)
 
     mySocket.close()
 
@@ -182,9 +179,7 @@ def do_one(destIP, hostname, timeout, mySeqNumber, numDataBytes,
     return delay
 
 
-# =============================================================================#
-def send_one_ping(mySocket, destIP, myID, mySeqNumber, numDataBytes,
-                  ipv6=False):
+def _send(mySocket, destIP, myID, mySeqNumber, numDataBytes, ipv6=False):
     """
     Send one ping to the given >destIP<.
     """
@@ -220,7 +215,7 @@ def send_one_ping(mySocket, destIP, myID, mySeqNumber, numDataBytes,
         data = bytearray(padBytes)
 
     # Calculate the checksum on the data and the dummy header.
-    myChecksum = checksum(header + data)  # Checksum is in network order
+    myChecksum = _checksum(header + data) # Checksum is in network order
 
     # Now that we have the right checksum, we put that in. It's just easier
     # to make up a new header than to stuff it into the dummy.
@@ -245,9 +240,8 @@ def send_one_ping(mySocket, destIP, myID, mySeqNumber, numDataBytes,
 
     return sendTime
 
-
-# =============================================================================#
-def receive_one_ping(mySocket, myID, timeout, ipv6=False):
+#=============================================================================#
+def _receive(mySocket, myID, timeout, ipv6 = False):
     """
     Receive the ping from the socket. Timeout = in ms
     """
@@ -288,9 +282,8 @@ def receive_one_ping(mySocket, myID, timeout, ipv6=False):
         if timeLeft <= 0:
             return None, 0, 0, 0, 0
 
-
-# =============================================================================#
-def dump_stats(myStats):
+#=============================================================================#
+def _dump_stats(myStats):
     """
     Show stats when pings are done
     """
@@ -308,13 +301,13 @@ def dump_stats(myStats):
             myStats.minTime, myStats.totTime/myStats.pktsRcvd, myStats.maxTime
         ))
 
-    print()
+    print('')
     return
 
 
-def signal_handler(signum, frame):
+def _signal_handler(signum, frame):
     """ Handle exit via signals """
-    dump_stats(myStats)
+    _dump_stats(myStats)
     print("\n(Terminated with signal %d)\n" % (signum))
     sys.exit(0)
 
@@ -325,10 +318,10 @@ def verbose_ping(hostname, timeout=3000, count=3,
     Send >count< ping to >destIP< with the given >timeout< and display
     the result.
     """
-    signal.signal(signal.SIGINT, signal_handler)  # Handle Ctrl-C
+    signal.signal(signal.SIGINT, _signal_handler)  # Handle Ctrl-C
     if hasattr(signal, "SIGBREAK"):
         # Handle Ctrl-Break e.g. under Windows
-        signal.signal(signal.SIGBREAK, signal_handler)
+        signal.signal(signal.SIGBREAK, _signal_handler)
 
     myStats = MyStats()  # Reset the stats
 
@@ -344,13 +337,13 @@ def verbose_ping(hostname, timeout=3000, count=3,
                                                         numDataBytes))
     except socket.gaierror as e:
         print("\nPYTHON PING: Unknown host: %s (%s)" % (hostname, str(e)))
-        print()
+        print('')
         return
 
     myStats.thisIP = destIP
 
     for i in range(count):
-        delay = do_one(destIP, hostname, timeout, mySeqNumber,
+        delay = single_ping(destIP, hostname, timeout, mySeqNumber,
                        numDataBytes, ipv6=ipv6, myStats=myStats)
         if delay is None:
             delay = 0
@@ -361,7 +354,7 @@ def verbose_ping(hostname, timeout=3000, count=3,
         if (MAX_SLEEP > delay):
             time.sleep((MAX_SLEEP - delay)/1000)
 
-    dump_stats(myStats)
+    _dump_stats(myStats)
     # 0 if we receive at least one packet
     # 1 if we don't receive any packets
     return not myStats.pktsRcvd
@@ -391,12 +384,12 @@ def quiet_ping(hostname, timeout=3000, count=3,
     # you sometimes loose the first packet. (while the switches find the way)
     if path_finder:
         fakeStats = MyStats()
-        do_one(fakeStats, destIP, hostname, timeout,
+        single_ping(fakeStats, destIP, hostname, timeout,
                mySeqNumber, numDataBytes, quiet=True, ipv6=ipv6)
         time.sleep(0.5)
 
     for i in range(count):
-        delay = do_one(destIP, hostname, timeout, mySeqNumber, numDataBytes,
+        delay = single_ping(destIP, hostname, timeout, mySeqNumber, numDataBytes,
                        quiet=True, ipv6=ipv6, myStats=myStats)
 
         if delay is None:
