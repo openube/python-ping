@@ -25,8 +25,9 @@
 
 """
 
-# TODO Remove any calls to time.sleep, to enable extension into larger framework that aren't multi threaded.
-#=============================================================================#
+# TODO Remove any calls to time.sleep
+# This would enable extension into larger framework that aren't multi threaded.
+# =============================================================================#
 import os
 import sys
 import time
@@ -35,6 +36,11 @@ import socket
 import struct
 import select
 import signal
+
+if __name__ == '__main__':
+    import argparse
+
+
 try:
     from _thread import get_ident
 except ImportError:
@@ -47,7 +53,7 @@ else:
     # On most other platforms the best timer is time.time()
     default_timer = time.time
 
-#=============================================================================#
+# =============================================================================#
 # ICMP parameters
 
 ICMP_ECHOREPLY = 0  # Echo reply (per RFC792)
@@ -57,6 +63,7 @@ ICMP_ECHO_IPV6_REPLY = 129  # Echo request (per RFC4443)
 ICMP_MAX_RECV = 2048  # Max size of incoming buffer
 
 MAX_SLEEP = 1000
+
 
 class MyStats:
     thisIP = "0.0.0.0"
@@ -87,7 +94,7 @@ def _checksum(source_string):
     val = sum(converted)
 
     val &= 0xffffffff  # Truncate val to 32 bits (a variance from ping.c, which
-                       # uses signed ints, but overflow is unlikely in ping)
+    # uses signed ints, but overflow is unlikely in ping)
 
     val = (val >> 16) + (val & 0xffff)  # Add high 16 bits to low 16 bits
     val += (val >> 16)  # Add carry from above (if any)
@@ -106,7 +113,8 @@ def single_ping(destIP, hostname, timeout, mySeqNumber, numDataBytes,
 
     if ipv6:
         try:  # One could use UDP here, but it's obscure
-            mySocket = socket.socket(socket.AF_INET6, socket.SOCK_RAW, socket.getprotobyname("ipv6-icmp"))
+            mySocket = socket.socket(socket.AF_INET6, socket.SOCK_RAW,
+                                     socket.getprotobyname("ipv6-icmp"))
             mySocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         except OSError as e:
             print("failed. (socket error: '%s')" % str(e))
@@ -116,7 +124,8 @@ def single_ping(destIP, hostname, timeout, mySeqNumber, numDataBytes,
     else:
 
         try:  # One could use UDP here, but it's obscure
-            mySocket = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.getprotobyname("icmp"))
+            mySocket = socket.socket(socket.AF_INET, socket.SOCK_RAW,
+                                     socket.getprotobyname("icmp"))
             mySocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         except OSError as e:
             print("failed. (socket error: '%s')" % str(e))
@@ -145,7 +154,8 @@ def single_ping(destIP, hostname, timeout, mySeqNumber, numDataBytes,
                 host_addr = hostname
             else:
                 try:
-                    host_addr = socket.inet_ntop(socket.AF_INET, struct.pack("!I", iphSrcIP))
+                    host_addr = socket.inet_ntop(socket.AF_INET, struct.pack(
+                        "!I", iphSrcIP))
                 except AttributeError:
                     # Python on windows dosn't have inet_ntop.
                     host_addr = hostname
@@ -168,7 +178,7 @@ def single_ping(destIP, hostname, timeout, mySeqNumber, numDataBytes,
 
     return delay
 
-# =============================================================================#
+
 def _send(mySocket, destIP, myID, mySeqNumber, numDataBytes, ipv6=False):
     """
     Send one ping to the given >destIP<.
@@ -204,7 +214,6 @@ def _send(mySocket, destIP, myID, mySeqNumber, numDataBytes, ipv6=False):
         # data = bytes(padBytes)
         data = bytearray(padBytes)
 
-
     # Calculate the checksum on the data and the dummy header.
     myChecksum = _checksum(header + data) # Checksum is in network order
 
@@ -224,7 +233,7 @@ def _send(mySocket, destIP, myID, mySeqNumber, numDataBytes, ipv6=False):
     sendTime = default_timer()
 
     try:
-        mySocket.sendto(packet, (destIP, 1))  # Port number is irrelevant for ICMP
+        mySocket.sendto(packet, (destIP, 1))  # Port number is irrelevant
     except OSError as e:
         print("General failure (%s)" % str(e))
         return
@@ -250,26 +259,24 @@ def _receive(mySocket, myID, timeout, ipv6 = False):
         recPacket, addr = mySocket.recvfrom(ICMP_MAX_RECV)
 
         ipHeader = recPacket[:20]
-        iphVersion, iphTypeOfSvc, iphLength, \
-        iphID, iphFlags, iphTTL, iphProtocol, \
-        iphChecksum, iphSrcIP, iphDestIP = struct.unpack(
-            "!BBHHHBBHII", ipHeader
-        )
+
+        iphVersion, iphTypeOfSvc, iphLength, iphID, iphFlags, iphTTL, \
+            iphProtocol, iphChecksum, iphSrcIP, iphDestIP = struct.unpack(
+                "!BBHHHBBHII", ipHeader)
 
         if ipv6:
             icmpHeader = recPacket[0:8]
         else:
             icmpHeader = recPacket[20:28]
 
-        icmpType, icmpCode, icmpChecksum, \
-        icmpPacketID, icmpSeqNumber = struct.unpack(
-            "!BBHHH", icmpHeader
-        )
+        icmpType, icmpCode, icmpChecksum, icmpPacketID, icmpSeqNumber \
+            = struct.unpack("!BBHHH", icmpHeader)
 
         # Match only the packets we care about
         if (icmpType != 8) and (icmpPacketID == myID):
             dataSize = len(recPacket) - 28
-            return timeReceived, (dataSize + 8), iphSrcIP, icmpSeqNumber, iphTTL
+            return timeReceived, (dataSize + 8), iphSrcIP, icmpSeqNumber, \
+                iphTTL
 
         timeLeft = timeLeft - howLongInSelect
         if timeLeft <= 0:
@@ -283,11 +290,11 @@ def _dump_stats(myStats):
     print("\n----%s PYTHON PING Statistics----" % (myStats.thisIP))
 
     if myStats.pktsSent > 0:
-        myStats.fracLoss = (myStats.pktsSent - myStats.pktsRcvd)/myStats.pktsSent
+        myStats.fracLoss = (myStats.pktsSent - myStats.pktsRcvd) / \
+            myStats.pktsSent
 
-    print("%d packets transmitted, %d packets received, %0.1f%% packet loss" % (
-        myStats.pktsSent, myStats.pktsRcvd, 100.0 * myStats.fracLoss
-    ))
+    print("%d packets transmitted, %d packets received, %0.1f%% packet loss"
+          % (myStats.pktsSent, myStats.pktsRcvd, 100.0 * myStats.fracLoss))
 
     if myStats.pktsRcvd > 0:
         print("round-trip (ms)  min/avg/max = %d/%0.1f/%d" % (
@@ -326,7 +333,8 @@ def verbose_ping(hostname, timeout=3000, count=3,
             destIP = info[4][0]
         else:
             destIP = socket.gethostbyname(hostname)
-        print("\nPYTHON PING %s (%s): %d data bytes" % (hostname, destIP, numDataBytes))
+        print("\nPYTHON PING %s (%s): %d data bytes" % (hostname, destIP,
+                                                        numDataBytes))
     except socket.gaierror as e:
         print("\nPYTHON PING: Unknown host: %s (%s)" % (hostname, str(e)))
         print('')
@@ -371,9 +379,9 @@ def quiet_ping(hostname, timeout=3000, count=3,
 
     myStats.thisIP = destIP
 
-    # This will send packet that we don't care about 0.5 seconds before it starts
-    # actually pinging. This is needed in big MAN/LAN networks where you sometimes
-    # loose the first packet. (while the switches find the way... :/ )
+    # This will send packet that we don't care about 0.5 seconds before it
+    # starts actually pinging. This is needed in big MAN/LAN networks where
+    # you sometimes loose the first packet. (while the switches find the way)
     if path_finder:
         fakeStats = MyStats()
         single_ping(fakeStats, destIP, hostname, timeout,
@@ -394,7 +402,8 @@ def quiet_ping(hostname, timeout=3000, count=3,
             time.sleep((MAX_SLEEP - delay) / 1000)
 
     if myStats.pktsSent > 0:
-        myStats.fracLoss = (myStats.pktsSent - myStats.pktsRcvd) / myStats.pktsSent
+        myStats.fracLoss = (myStats.pktsSent - myStats.pktsRcvd) / \
+            myStats.pktsSent
 
     if myStats.pktsRcvd > 0:
         myStats.avrgTime = myStats.totTime / myStats.pktsRcvd
@@ -402,24 +411,21 @@ def quiet_ping(hostname, timeout=3000, count=3,
     # return tuple(max_rtt, min_rtt, avrg_rtt, percent_lost)
     return myStats.maxTime, myStats.minTime, myStats.avrgTime, myStats.fracLoss
 
-def print_help():
-    """ Prints usage help information """
-    print("\n\tUsage: ping.py [destination]")
-
 
 # =============================================================================#
 if __name__ == '__main__':
-    # FIXME: Add a real CLI
-    if len(sys.argv) == 1:
-
+    # FIXME: Add a real CLI (mostly fixed)
+    if sys.argv.count('-T') or sys.argv.count('--test_case'):
+        print('Running PYTHON PING test case.')
         # These should work:
         verbose_ping("127.0.0.1")
         verbose_ping("8.8.8.8")
         verbose_ping("heise.de")
         verbose_ping("google.com")
 
-        # Inconsistent on Windows w/ ActivePython (Python 3.2 resolves correctly
-        # to the local host, but 2.7 tries to resolve to the local *gateway*)
+        # Inconsistent on Windows w/ ActivePython (Python 3.2 resolves
+        # correctly to the local host, but 2.7 tries to resolve to the local
+        # *gateway*)
         verbose_ping("localhost")
 
         # Should fail with 'getaddrinfo failed':
@@ -428,10 +434,32 @@ if __name__ == '__main__':
         # Should fail (timeout), but it depends on the local network:
         verbose_ping("192.168.255.254")
 
-        # Should fails with 'The requested address is not valid in its context':
+        # Should fails with 'The requested address is not valid in its context'
         verbose_ping("0.0.0.0")
-    elif len(sys.argv) == 2:
-        retval = verbose_ping(sys.argv[1])
-        sys.exit(retval)
-    else:
-        print("Error: call ./ping.py hostname")
+
+    parser = argparse.ArgumentParser(prog='python-ping',
+                                     description='A pure python implementation\
+                                      of the ping protocol. *REQUIRES ROOT*')
+    parser.add_argument('address', help='The address to attempt to ping.')
+
+    parser.add_argument('-t', '--timeout', help='The maximum amount of time to\
+                         wait until ping timeout.', type=int, default=3000)
+
+    parser.add_argument('-c', '--request_count', help='The number of attempts \
+                        to make. See --infinite to attempt requests until \
+                        stopped.', type=int, default=3)
+    # TODO Implement the ability to continuously attempt pings.
+
+    parser.add_argument('-I', '--ipv6', action='store_true', help='Flag to \
+                        use IPv6.')
+
+    parser.add_argument('-s', '--packet_size', type=int, help='Designate the\
+                        amount of data to send per packet.', default=64)
+
+    parser.add_argument('-T', '--test_case', action='store_true', help='Flag \
+                        to run the default test case suite.')
+
+    parsed = parser.parse_args()
+
+    sys.exit(verbose_ping(parsed.address, parsed.timeout, parsed.request_count,
+                          parsed.packet_size, ipv6=parsed.ipv6))
