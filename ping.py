@@ -27,7 +27,6 @@
 
 # TODO Remove any calls to time.sleep
 # This would enable extension into larger framework that aren't multi threaded.
-# =============================================================================#
 import os
 import sys
 import time
@@ -53,7 +52,6 @@ else:
     # On most other platforms the best timer is time.time()
     default_timer = time.time
 
-# =============================================================================#
 # ICMP parameters
 
 ICMP_ECHOREPLY = 0  # Echo reply (per RFC792)
@@ -78,7 +76,7 @@ class MyStats:
 # NOT Used globally anymore.
 myStats = MyStats
 
-#=============================================================================#
+
 def _checksum(source_string):
     """
     A port of the functionality of in_cksum() from ping.c
@@ -143,7 +141,8 @@ def single_ping(destIP, hostname, timeout, mySeqNumber, numDataBytes,
     if myStats is not None:
         myStats.pktsSent += 1
 
-    recvTime, dataSize, iphSrcIP, icmpSeqNumber, iphTTL = _receive(mySocket, my_ID, timeout, ipv6)
+    recvTime, dataSize, iphSrcIP, icmpSeqNumber, iphTTL \
+        = _receive(mySocket, my_ID, timeout, ipv6)
 
     mySocket.close()
 
@@ -215,7 +214,7 @@ def _send(mySocket, destIP, myID, mySeqNumber, numDataBytes, ipv6=False):
         data = bytearray(padBytes)
 
     # Calculate the checksum on the data and the dummy header.
-    myChecksum = _checksum(header + data) # Checksum is in network order
+    myChecksum = _checksum(header + data)  # Checksum is in network order
 
     # Now that we have the right checksum, we put that in. It's just easier
     # to make up a new header than to stuff it into the dummy.
@@ -240,8 +239,8 @@ def _send(mySocket, destIP, myID, mySeqNumber, numDataBytes, ipv6=False):
 
     return sendTime
 
-#=============================================================================#
-def _receive(mySocket, myID, timeout, ipv6 = False):
+
+def _receive(mySocket, myID, timeout, ipv6=False):
     """
     Receive the ping from the socket. Timeout = in ms
     """
@@ -282,7 +281,7 @@ def _receive(mySocket, myID, timeout, ipv6 = False):
         if timeLeft <= 0:
             return None, 0, 0, 0, 0
 
-#=============================================================================#
+
 def _dump_stats(myStats):
     """
     Show stats when pings are done
@@ -359,8 +358,6 @@ def verbose_ping(hostname, timeout=3000, count=3,
     # 1 if we don't receive any packets
     return not myStats.pktsRcvd
 
-# =============================================================================#
-
 
 def quiet_ping(hostname, timeout=3000, count=3,
                numDataBytes=64, path_finder=False, ipv6=False):
@@ -412,7 +409,6 @@ def quiet_ping(hostname, timeout=3000, count=3,
     return myStats.maxTime, myStats.minTime, myStats.avrgTime, myStats.fracLoss
 
 
-# =============================================================================#
 if __name__ == '__main__':
     # FIXME: Add a real CLI (mostly fixed)
     if sys.argv.count('-T') or sys.argv.count('--test_case'):
