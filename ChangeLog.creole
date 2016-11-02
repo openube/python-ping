@@ -1,5 +1,11 @@
 == Revision history ==
 
+==== November 2, 2016 ====
+----------------
+  * Updating Authors
+  * Fixing up function names as suggested by EclectickMedia
+    https://github.com/l4m3rx/python-ping/issues/13
+
 ==== October 26, 2016 ====
 ----------------
   * PEP8 Stuff
