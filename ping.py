@@ -204,8 +204,8 @@ def _send(mySocket, destIP, myID, mySeqNumber, numDataBytes, ipv6=False):
     # to build the data differnely for different version
     # or it will make packets with unexpected size.
     if sys.version[:1] == '2':
-        bytes = struct.calcsize("d")
-        data = ((numDataBytes - 8) - bytes) * "Q"
+        _bytes = struct.calcsize("d")
+        data = ((numDataBytes - 8) - _bytes) * "Q"
         data = struct.pack("d", default_timer()) + data
     else:
         for i in range(startVal, startVal + (numDataBytes - 8)):
