@@ -12,16 +12,26 @@ A pure python ping implementation using raw sockets.
 === Usage ===
 
 {{{
-~/python-ping$ sudo ./ping.py google.com
+usage: python-ping [-h] [-t TIMEOUT] [-c REQUEST_COUNT] [-I] [-s PACKET_SIZE]
+                   [-T]
+                   address
 
-PYTHON-PING google.com (209.85.148.99): 55 data bytes
-64 bytes from google.com (209.85.148.99): icmp_seq=0 ttl=54 time=56.2 ms
-64 bytes from google.com (209.85.148.99): icmp_seq=1 ttl=54 time=55.7 ms
-64 bytes from google.com (209.85.148.99): icmp_seq=2 ttl=54 time=55.5 ms
+A pure python implementation of the ping protocol. *REQUIRES ROOT*
 
-----google.com PYTHON PING Statistics----
-3 packets transmitted, 3 packets received, 0.0% packet loss
-round-trip (ms)  min/avg/max = 55.468/55.795/56.232
+positional arguments:
+  address               The address to attempt to ping.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -t TIMEOUT, --timeout TIMEOUT
+                        The maximum amount of time to wait until ping timeout.
+  -c REQUEST_COUNT, --request_count REQUEST_COUNT
+                        The number of attempts to make. See --infinite to
+                        attempt requests until stopped.
+  -I, --ipv6            Flag to use IPv6.
+  -s PACKET_SIZE, --packet_size PACKET_SIZE
+                        Designate the amount of data to send per packet.
+  -T, --test_case       Flag to run the default test case suite.
 }}}
 
 
