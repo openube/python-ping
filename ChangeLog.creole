@@ -5,7 +5,10 @@
   * Fix. Replacing print() with print('') to avoid python2.x printing "()" liens
   * Introduce a basic CLI interface via Python's argparse by Ariana Giroux
     https://github.com/l4m3rx/python-ping/pull/15/commits/0ea79021dfba8ce57ee967f0e923846f627aac71
-  * Rename variable from 'bytes' to '_bytes' in order to avoid overwrite the building object.
+  * Rename variables to avoid overwriting python building functions/objects.
+    ping.py: bytes -> _bytes
+    setup.py: hash -> mhash
+    icmp_messages.py: type -> itype
 
 ==== November 2, 2016 ====
 ----------------

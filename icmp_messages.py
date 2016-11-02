@@ -52,7 +52,7 @@ ICMP_CONTROL_MESSAGE = \
      14:{0:  'Timestamp reply',
         },
     }
-    
+
 
 """
    ICMPv6 Control Messages
@@ -85,16 +85,16 @@ if __name__ == '__main__':
     # Print all defined ICMP Control Messages
     print("ICMP Control Messages")
     print("Type\tCode:\tMessage")
-    for (type, codes) in ICMP_CONTROL_MESSAGE.items():
+    for (itype, codes) in ICMP_CONTROL_MESSAGE.items():
         print("")
         for (code, message) in codes.items():
-            print("[%d]\t[%d]:\t%s" % (type, code, message))
+            print("[%d]\t[%d]:\t%s" % (itype, code, message))
     print("")
-    
+
     # Print all defined ICMPv6 Control Messages
     print("ICMPv6 Control Messages")
     print("Type\tCode:\tMessage")
-    for (type, codes) in ICMPv6_CONTROL_MESSAGE.items():
+    for (itype, codes) in ICMPv6_CONTROL_MESSAGE.items():
         print("")
         for (code, message) in codes.items():
-            print("[%d]\t[%d]:\t%s" % (type, code, message))
+            print("[%d]\t[%d]:\t%s" % (itype, code, message))
