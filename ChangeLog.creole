@@ -2,6 +2,12 @@
 
 ==== November 3, 2016 ====
 ----------------
+  * Converting quiet and verbose ping functions to generator so we can do infinite ping.
+    All the work was done by Ariana Giroux.
+    https://github.com/l4m3rx/python-ping/issues/14
+
+==== November 3, 2016 ====
+----------------
   * Adding exception when sending packets to handle socket.error (Python2.x issue)
     Thanks to Ariana Giroux https://github.com/l4m3rx/python-ping/issues/16
   * Fixing MyStats printing.
