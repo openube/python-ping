@@ -236,6 +236,9 @@ def _send(mySocket, destIP, myID, mySeqNumber, numDataBytes, ipv6=False):
     except OSError as e:
         print("General failure (%s)" % str(e))
         return
+    except socket.error as e:
+        print("General failure (%s)" % str(e))
+        return
 
     return sendTime
 
@@ -296,7 +299,7 @@ def _dump_stats(myStats):
           % (myStats.pktsSent, myStats.pktsRcvd, 100.0 * myStats.fracLoss))
 
     if myStats.pktsRcvd > 0:
-        print("round-trip (ms)  min/avg/max = %d/%0.1f/%d" % (
+        print("round-trip (ms)  min/avg/max = %0.1f/%0.1f/%0.1f" % (
             myStats.minTime, myStats.totTime/myStats.pktsRcvd, myStats.maxTime
         ))
 

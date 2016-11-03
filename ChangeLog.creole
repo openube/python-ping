@@ -1,5 +1,11 @@
 == Revision history ==
 
+==== November 3, 2016 ====
+----------------
+  * Adding exception when sending packets to handle socket.error (Python2.x issue)
+    Thanks to Ariana Giroux https://github.com/l4m3rx/python-ping/issues/16
+  * Fixing MyStats printing.
+
 ==== November 2, 2016 ====
 ----------------
   * Fix. Replacing print() with print('') to avoid python2.x printing "()" liens
