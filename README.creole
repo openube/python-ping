@@ -59,6 +59,12 @@ round-trip (ms)  min/avg/max = 4.4/4.5/4.7
 
 [1, 2, 3, False]
 
+
+>>> list(ping.quiet_ping('google.com', timeout=3000, count=3, numDataBytes=1300))
+[1, 2, 3, (4.508256912231445, 4.332065582275391, 4.399617513020833, 0.0)]
+>>> list(ping.quiet_ping('google.com', timeout=3000, count=3, numDataBytes=1300))[-1]
+(4.535675048828125, 4.359245300292969, 4.423936208089192, 0.0)
+
 >>> ping.quiet_ping('google.com', timeout=3000, count=5, numDataBytes=1300)
 (4.718780517578125, 4.3621063232421875, 4.553556442260742, 0)
 >>> 
