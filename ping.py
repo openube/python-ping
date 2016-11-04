@@ -63,7 +63,7 @@ ICMP_MAX_RECV = 2048  # Max size of incoming buffer
 MAX_SLEEP = 1000
 
 
-class MyStats:
+class MStats:
     thisIP = "0.0.0.0"
     pktsSent = 0
     pktsRcvd = 0
@@ -74,7 +74,7 @@ class MyStats:
     fracLoss = 1.0
 
 # NOT Used globally anymore.
-myStats = MyStats
+myStats = MStats
 
 
 def _checksum(source_string):
@@ -342,7 +342,7 @@ def verbose_ping(hostname, timeout=3000, count=3,
         # Handle Ctrl-Break e.g. under Windows
         signal.signal(signal.SIGBREAK, _signal_handler)
 
-    myStats = MyStats()  # Reset the stats
+    myStats = MStats()  # Reset the stats
 
     mySeqNumber = 0  # Starting value
 
@@ -391,7 +391,7 @@ def verbose_ping(hostname, timeout=3000, count=3,
 def quiet_ping(hostname, timeout=3000, count=3,
                numDataBytes=64, path_finder=False, ipv6=False):
     """ Same as verbose_ping, but the results are yielded as a tuple """
-    myStats = MyStats()  # Reset the stats
+    myStats = MStats()  # Reset the stats
     mySeqNumber = 0  # Starting value
 
     try:
@@ -409,7 +409,7 @@ def quiet_ping(hostname, timeout=3000, count=3,
     # starts actually pinging. This is needed in big MAN/LAN networks where
     # you sometimes loose the first packet. (while the switches find the way)
     if path_finder:
-        fakeStats = MyStats()
+        fakeStats = MStats()
         single_ping(fakeStats, destIP, hostname, timeout,
                     mySeqNumber, numDataBytes, quiet=True, ipv6=ipv6)
         time.sleep(0.5)

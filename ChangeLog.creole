@@ -1,5 +1,9 @@
 == Revision history ==
 
+==== November 4, 2016 ====
+----------------
+  * Renaming MyStats class to avoid confusion
+
 ==== November 3, 2016 ====
 ----------------
   * Converting quiet and verbose ping functions to generator so we can do infinite ping.
