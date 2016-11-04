@@ -74,7 +74,7 @@ class MStats:
     fracLoss = 1.0
 
 # Used as 'global' variale so we can print
-# stats when exiting by signal 
+# stats when exiting by signal
 myStats = MStats
 
 
@@ -104,7 +104,7 @@ def _checksum(source_string):
 
 
 def single_ping(destIP, hostname, timeout, mySeqNumber, numDataBytes,
-                myStats=None, quiet=False, ipv6=False):
+                myStats=None, quiet=False, ipv6=False, verbose=True):
     """
     Returns either the delay (in ms) or None on timeout.
     """
@@ -116,9 +116,10 @@ def single_ping(destIP, hostname, timeout, mySeqNumber, numDataBytes,
                                      socket.getprotobyname("ipv6-icmp"))
             mySocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         except OSError as e:
-            print("failed. (socket error: '%s')" % str(e))
-            print('Note that python-ping uses RAW sockets'
-                  'and requiers root rights.')
+            if verbose:
+                print("failed. (socket error: '%s')" % str(e))
+                print('Note that python-ping uses RAW sockets'
+                      'and requiers root rights.')
             raise  # raise the original error
     else:
 
@@ -127,9 +128,10 @@ def single_ping(destIP, hostname, timeout, mySeqNumber, numDataBytes,
                                      socket.getprotobyname("icmp"))
             mySocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         except OSError as e:
-            print("failed. (socket error: '%s')" % str(e))
-            print('Note that python-ping uses RAW sockets'
-                  'and requires root rights.')
+            if verbose:
+                print("failed. (socket error: '%s')" % str(e))
+                print('Note that python-ping uses RAW sockets'
+                      'and requires root rights.')
             raise  # raise the original error
 
     my_ID = (os.getpid() ^ get_ident()) & 0xFFFF
@@ -160,9 +162,10 @@ def single_ping(destIP, hostname, timeout, mySeqNumber, numDataBytes,
                     # Python on windows dosn't have inet_ntop.
                     host_addr = hostname
 
-            print("%d bytes from %s: icmp_seq=%d ttl=%d time=%.2f ms" % (
-                dataSize, host_addr, icmpSeqNumber, iphTTL, delay)
-            )
+            if verbose:
+                print("%d bytes from %s: icmp_seq=%d ttl=%d time=%.2f ms" % (
+                      dataSize, host_addr, icmpSeqNumber, iphTTL, delay)
+                      )
 
         if myStats is not None:
             myStats.pktsRcvd += 1
@@ -339,9 +342,9 @@ def verbose_ping(hostname, timeout=3000, count=3,
         >>> exit_code = consume[:-1]  # The last yield is the exit code.
         >>> sys.exit(exit_code)
     """
-    
+
     global myStats
-    
+
     # Handle Ctrl+C
     signal.signal(signal.SIGINT, _signal_handler)
     if hasattr(signal, "SIGBREAK"):  # Handle Ctrl-Break /Windows/
