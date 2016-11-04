@@ -73,7 +73,8 @@ class MStats:
     avrgTime = 0
     fracLoss = 1.0
 
-# NOT Used globally anymore.
+# Used as 'global' variale so we can print
+# stats when exiting by signal 
 myStats = MStats
 
 
@@ -309,6 +310,7 @@ def _dump_stats(myStats):
 
 def _signal_handler(signum, frame):
     """ Handle exit via signals """
+    global myStats
     _dump_stats(myStats)
     print("\n(Terminated with signal %d)\n" % (signum))
     sys.exit(0)
@@ -337,13 +339,15 @@ def verbose_ping(hostname, timeout=3000, count=3,
         >>> exit_code = consume[:-1]  # The last yield is the exit code.
         >>> sys.exit(exit_code)
     """
-    signal.signal(signal.SIGINT, _signal_handler)  # Handle Ctrl-C
-    if hasattr(signal, "SIGBREAK"):
-        # Handle Ctrl-Break e.g. under Windows
+    
+    global myStats
+    
+    # Handle Ctrl+C
+    signal.signal(signal.SIGINT, _signal_handler)
+    if hasattr(signal, "SIGBREAK"):  # Handle Ctrl-Break /Windows/
         signal.signal(signal.SIGBREAK, _signal_handler)
 
     myStats = MStats()  # Reset the stats
-
     mySeqNumber = 0  # Starting value
 
     try:

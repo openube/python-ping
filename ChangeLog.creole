@@ -3,6 +3,7 @@
 ==== November 4, 2016 ====
 ----------------
   * Renaming MyStats class to avoid confusion
+  * Making myStats global variable so we can print stats when terminating with signal
 
 ==== November 3, 2016 ====
 ----------------
