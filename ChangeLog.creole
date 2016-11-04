@@ -4,6 +4,7 @@
 ----------------
   * Renaming MyStats class to avoid confusion
   * Making myStats global variable so we can print stats when terminating with signal
+  * Fixing small bug in quiet_ping() preventing in from ever exiting.
 
 ==== November 3, 2016 ====
 ----------------

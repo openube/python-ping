@@ -418,7 +418,7 @@ def quiet_ping(hostname, timeout=3000, count=3,
                     mySeqNumber, numDataBytes, quiet=True, ipv6=ipv6)
         time.sleep(0.5)
 
-    i = 0
+    i = 1
     while 1:
         delay = single_ping(destIP, hostname, timeout, mySeqNumber,
                             numDataBytes, quiet=True, ipv6=ipv6,
@@ -428,19 +428,17 @@ def quiet_ping(hostname, timeout=3000, count=3,
             delay = 0
 
         mySeqNumber += 1
-
         # Pause for the remainder of the MAX_SLEEP period (if applicable)
         if (MAX_SLEEP > delay):
             time.sleep((MAX_SLEEP - delay) / 1000)
 
         yield myStats.pktsSent
-
         if count is not None and i < count:
             i += 1
-        elif count is not None:
-            yield myStats.pktsSent
         elif count is not None and i >= count:
             break
+        elif count is not None:
+            yield myStats.pktsSent
 
     if myStats.pktsSent > 0:
         myStats.fracLoss = (myStats.pktsSent - myStats.pktsRcvd) / \

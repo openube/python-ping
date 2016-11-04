@@ -43,20 +43,22 @@ Python 2.7.11 (default, Mar  3 2016, 13:35:30)
 [GCC 5.3.0] on linux2
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import ping
->>> ping.verbose_ping('google.com', timeout=3000, count=5, numDataBytes=1300)
+>>> ping.verbose_ping('google.com', timeout=3000, count=3, numDataBytes=1300)
+<generator object verbose_ping at 0x7fa954e04eb0>
+>>> list(ping.verbose_ping('google.com', timeout=3000, count=3, numDataBytes=1300))
 
-PYTHON PING google.com (216.58.209.14): 1300 data bytes
-72 bytes from 216.58.209.14: icmp_seq=0 ttl=59 time=4.53 ms
-72 bytes from 216.58.209.14: icmp_seq=1 ttl=59 time=4.37 ms
-72 bytes from 216.58.209.14: icmp_seq=2 ttl=59 time=4.31 ms
-72 bytes from 216.58.209.14: icmp_seq=3 ttl=59 time=4.47 ms
-72 bytes from 216.58.209.14: icmp_seq=4 ttl=59 time=4.42 ms
+PYTHON PING google.com (216.58.212.46): 1300 data bytes
+72 bytes from 216.58.212.46: icmp_seq=0 ttl=59 time=4.42 ms
+72 bytes from 216.58.212.46: icmp_seq=1 ttl=59 time=4.70 ms
+72 bytes from 216.58.212.46: icmp_seq=2 ttl=59 time=4.44 ms
+72 bytes from 216.58.212.46: icmp_seq=3 ttl=59 time=4.47 ms
 
-----216.58.209.14 PYTHON PING Statistics----
-5 packets transmitted, 5 packets received, 0.0% packet loss
-round-trip (ms)  min/avg/max = 4/4.4/4
-()
-False
+----216.58.212.46 PYTHON PING Statistics----
+4 packets transmitted, 4 packets received, 0.0% packet loss
+round-trip (ms)  min/avg/max = 4.4/4.5/4.7
+
+[1, 2, 3, False]
+
 >>> ping.quiet_ping('google.com', timeout=3000, count=5, numDataBytes=1300)
 (4.718780517578125, 4.3621063232421875, 4.553556442260742, 0)
 >>> 
