@@ -179,7 +179,7 @@ def single_ping(destIP, hostname, timeout, mySeqNumber, numDataBytes,
         if not quiet:
             print("Request timed out.")
 
-    return delay
+    return delay, (recvTime, dataSize, iphSrcIP, icmpSeqNumber, iphTTL)
 
 
 def _send(mySocket, destIP, myID, mySeqNumber, numDataBytes, ipv6=False):
@@ -371,7 +371,7 @@ def verbose_ping(hostname, timeout=3000, count=3,
     i = 0
     while 1:
         delay = single_ping(destIP, hostname, timeout, mySeqNumber,
-                            numDataBytes, ipv6=ipv6, myStats=myStats)
+                            numDataBytes, ipv6=ipv6, myStats=myStats)[0]
         if delay is None:
             delay = 0
 
@@ -418,7 +418,7 @@ def quiet_ping(hostname, timeout=3000, count=3,
     if path_finder:
         fakeStats = MStats()
         single_ping(fakeStats, destIP, hostname, timeout,
-                    mySeqNumber, numDataBytes, quiet=True, ipv6=ipv6)
+                    mySeqNumber, numDataBytes, quiet=True, ipv6=ipv6)[0]
         time.sleep(0.5)
 
     i = 1
