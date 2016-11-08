@@ -139,7 +139,7 @@ def single_ping(destIP, hostname, timeout, mySeqNumber, numDataBytes,
     sentTime = _send(mySocket, destIP, my_ID, mySeqNumber, numDataBytes, ipv6)
     if sentTime is None:
         mySocket.close()
-        return delay
+        return delay, (None,)
 
     if myStats is not None:
         myStats.pktsSent += 1
