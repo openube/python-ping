@@ -136,7 +136,8 @@ def single_ping(destIP, hostname, timeout, mySeqNumber, numDataBytes,
 
     my_ID = (os.getpid() ^ get_ident()) & 0xFFFF
 
-    sentTime = _send(mySocket, destIP, my_ID, mySeqNumber, numDataBytes, ipv6)
+    sentTime = _send(mySocket, destIP, my_ID, mySeqNumber, numDataBytes, ipv6,
+                     verbose)
     if sentTime is None:
         mySocket.close()
         return delay, (None,)
@@ -238,10 +239,12 @@ def _send(mySocket, destIP, myID, mySeqNumber, numDataBytes, ipv6=False):
     try:
         mySocket.sendto(packet, (destIP, 1))  # Port number is irrelevant
     except OSError as e:
-        print("General failure (%s)" % str(e))
+        if verbose:
+            print("General failure (%s)" % str(e))
         return
     except socket.error as e:
-        print("General failure (%s)" % str(e))
+        if verbose:
+            print("General failure (%s)" % str(e))
         return
 
     return sendTime
