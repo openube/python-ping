@@ -183,7 +183,8 @@ def single_ping(destIP, hostname, timeout, mySeqNumber, numDataBytes,
     return delay, (recvTime, dataSize, iphSrcIP, icmpSeqNumber, iphTTL)
 
 
-def _send(mySocket, destIP, myID, mySeqNumber, numDataBytes, ipv6=False):
+def _send(mySocket, destIP, myID, mySeqNumber, numDataBytes, ipv6=False,
+          verbose=True):
     """
     Send one ping to the given >destIP<.
     """
